@@ -5,7 +5,7 @@
 GenPhyloInfect
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+see README.Rmd for how to use package.
 }
 \usage{
 genPhyloInfect(table, end_time = 10, recent = table$affected[1], time_of_infection = 0, counter = 0)

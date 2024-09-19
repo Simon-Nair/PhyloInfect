@@ -5,7 +5,7 @@
 EndTimeInfected
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+see README.Rmd for how to use package.
 }
 \usage{
 end_time_infected(table)

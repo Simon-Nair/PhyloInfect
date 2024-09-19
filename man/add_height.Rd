@@ -5,7 +5,7 @@
 AddHeight
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+see README.Rmd for how to use package.
 }
 \usage{
 add_height(table)
