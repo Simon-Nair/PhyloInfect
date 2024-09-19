@@ -168,5 +168,5 @@ In the above example, id 30 is set to the initial infected.
 54 in the original simulation branches from 8 who branches from 10, in the subtree 54's new time of infection is when 8 got infected. This is because 30 is acting as the initial infected or 10 in this case. Because 8 recovered they would not be in the sample at the end time. However, from the genetic data we would know that the virus branched at the time of 8's infection since it would have been mutating independently from 30. The red line shows the virus for id 30, the blue line shows the when it started mutating independently.
 
 ![](https://raw.githubusercontent.com/Simon-Nair/PhyloInfect/master/subtreeExample.png)
-![](https://github.com/Simon-Nair/PhyloInfect/blob/master/subtreeExample2.png)
+![](https://raw.github.com/Simon-Nair/PhyloInfect/master/subtreeExample2.png)
 For more information please email me [si.nair205\@gmail.com](mailto:si.nair205@gmail.com){.email}
