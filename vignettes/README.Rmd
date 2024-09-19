@@ -1,0 +1,170 @@
+---
+title: "**PhyloInfect**"
+output: html_document
+
+---
+
+```{r}
+source("~/PhyloInfect.R")
+source("~/Subtree.R")
+set.seed(1)
+```
+
+## **Overview**
+
+PhyloInfect is a new way to display the phylogeny of how a virus spreads with an emphasis on who infected who.  
+This package provides two main functions. Graphing the phylogeny of a virus simulation and generating a subtree of a simulation.   
+
+## **Data** 
+It is essential that your simulation information is stored in a data frame in the following format.  
+**Phylogeny function is meant for population sizes of 60 or less**   
+This is for readability.  
+
+#### Column Info:
+
+##### time:  
+**class:** numeric, **type:** double  
+stores times of events in chronological order, starting from 0.  
+events include both infections and recoveries  
+
+##### infector:      
+**class:** list, **type:** list  
+stores id's of individuals who are infecting others or recovering.  
+*except for first row  
+
+##### affected:     
+**class:** list, **type:** list    
+stores id's of individuals who are getting infected or 0 to represent that the "infector" has recovered  
+*except for first row  
+ 
+##### Rules:   
+*start at time 0 where the infector is 0 and your initial infected id is the affected  
+a 0 in the affected column implies the infector recovers  
+
+##### Example Data frame:    
+
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**time** &nbsp;&nbsp;&nbsp;&nbsp;**infector** &nbsp;&nbsp;&nbsp;**affected**    
+01 &nbsp;&nbsp; 0.000000  &nbsp;&nbsp;  0  &nbsp;&nbsp;&nbsp;&nbsp;    35   &nbsp;&nbsp;&nbsp;&nbsp;     # <- initial infected is individual (id) 35  
+02 &nbsp;&nbsp; 1.699666  &nbsp;&nbsp;    35   &nbsp;&nbsp;&nbsp;&nbsp;   11    
+03 &nbsp;&nbsp; 1.801389  &nbsp;&nbsp;   11    &nbsp;&nbsp;&nbsp;&nbsp;    7  
+04 &nbsp;&nbsp; 2.212258  &nbsp;&nbsp;     7   &nbsp;&nbsp;&nbsp;&nbsp;    23  &nbsp;&nbsp;&nbsp;&nbsp;      # <- at time 2.212258, id 7 infects id 23  
+05 &nbsp;&nbsp; 2.342953  &nbsp;&nbsp;   11    &nbsp;&nbsp;&nbsp;&nbsp;    0  
+06 &nbsp;&nbsp; 2.680962  &nbsp;&nbsp;     7   &nbsp;&nbsp;&nbsp;&nbsp;     8  
+07 &nbsp;&nbsp; 2.872288  &nbsp;&nbsp;     8   &nbsp;&nbsp;&nbsp;&nbsp;    46  
+08 &nbsp;&nbsp; 2.973216  &nbsp;&nbsp;     8   &nbsp;&nbsp;&nbsp;&nbsp;     0   &nbsp;&nbsp;&nbsp;&nbsp;    # <- at time 2.973216, id 8 recovers   
+09 &nbsp;&nbsp; 3.260876  &nbsp;&nbsp;      7  &nbsp;&nbsp;&nbsp;&nbsp;     22  
+10 &nbsp;&nbsp; 3.268270  &nbsp;&nbsp;    35   &nbsp;&nbsp;&nbsp;&nbsp;    44  
+11 &nbsp;&nbsp; 3.370718  &nbsp;&nbsp;     22  &nbsp;&nbsp;&nbsp;&nbsp;     54  
+12 &nbsp;&nbsp; 3.459313  &nbsp;&nbsp;    23   &nbsp;&nbsp;&nbsp;&nbsp;    39  
+13 &nbsp;&nbsp; 3.826899  &nbsp;&nbsp;    35   &nbsp;&nbsp;&nbsp;&nbsp;    34  
+14 &nbsp;&nbsp; 3.890558  &nbsp;&nbsp;     22  &nbsp;&nbsp;&nbsp;&nbsp;      3  
+15 &nbsp;&nbsp; 4.142043  &nbsp;&nbsp;     44  &nbsp;&nbsp;&nbsp;&nbsp;      0  
+16 &nbsp;&nbsp; 4.146549  &nbsp;&nbsp;     54  &nbsp;&nbsp;&nbsp;&nbsp;      0  
+17 &nbsp;&nbsp; 4.189537  &nbsp;&nbsp;     22  &nbsp;&nbsp;&nbsp;&nbsp;     53  
+18 &nbsp;&nbsp; 4.194471  &nbsp;&nbsp;     22  &nbsp;&nbsp;&nbsp;&nbsp;      0  
+19 &nbsp;&nbsp; 4.318801  &nbsp;&nbsp;     35  &nbsp;&nbsp;&nbsp;&nbsp;      0  
+20 &nbsp;&nbsp; 4.434870  &nbsp;&nbsp;    46   &nbsp;&nbsp;&nbsp;&nbsp;    27  
+21 &nbsp;&nbsp; 4.604108  &nbsp;&nbsp;      3  &nbsp;&nbsp;&nbsp;&nbsp;      0  
+22 &nbsp;&nbsp; 4.831113  &nbsp;&nbsp;     46  &nbsp;&nbsp;&nbsp;&nbsp;      0  
+
+<br>
+
+## **Phylogeny** 
+To generate the phyologeny simply call the phyloInfect function, passing in the table and end time from your simulation. This function is designed for population sizes of 60 or less. Returns the number total number of line segments drawn which is equal to the number of infected individuals throughout the simulation including the initial infected.  
+
+#### Usage 
+
+phyloInfect(table, end_time, title)
+
+#### Arguments
+
+table &nbsp;&nbsp;&nbsp;&nbsp; data frame as defined above  
+
+title &nbsp;&nbsp;&nbsp;&nbsp;  string for title of phylogeny
+
+end_time &nbsp;&nbsp;&nbsp;&nbsp;  integer representing sample or end time of simulation, default is 10  
+
+#### Example Usage
+
+```{r, fig.width=10, fig.height=8,results='hide',fig.keep='all'}
+
+# example simulation table
+table <- data.frame(
+  time = c(
+0.000000, 1.344831, 3.629079, 4.671126, 4.763760, 5.015975, 5.122262, 5.218606, 5.633607, 5.771709, 5.865152, 6.054717, 6.887149, 7.049164, 7.165763, 7.243929, 7.541417, 7.610835, 7.636492, 7.737071, 7.781813, 7.831907, 7.925445, 7.942483, 8.080316, 8.158974, 8.269365, 8.343334, 8.384208, 8.458781, 8.483169, 8.574156, 8.595720, 8.605882, 8.663589, 8.706441, 8.769853, 8.788321, 8.880574, 8.953410, 8.961590, 8.987774, 9.110543, 9.555767, 9.719297, 9.813672, 9.931840
+  ),
+  infector = c(0, 10, 10, 50 ,58, 10, 48, 58, 10, 10, 55, 10, 10, 10, 30, 15, 8, 54, 30, 55, 19, 36, 30, 30, 17, 55, 24, 20, 36, 17, 54, 36, 3, 3, 4, 27, 13, 8, 51, 44, 30, 46, 35, 44, 40, 34, 47
+  ),
+  affected = c(10, 50, 58, 0, 48, 15, 0, 0, 8, 55, 19, 3, 30, 0, 36, 0, 54, 20, 24, 17, 34, 40, 14, 51, 4, 0, 0, 53, 27, 0, 44, 0, 46, 0, 13, 0, 35, 0, 32, 60, 12, 0, 0, 39, 0, 47, 56
+  )
+)
+
+# example title
+title <- "Example"
+
+# example end time
+end_time <-  10
+
+# generate phylogeny
+phyloInfect(table, title, end_time)
+
+```
+
+<br>
+
+## **Subtree**
+
+**Requires phyloInfect to be run simulation first**
+With the surge in collection of genetic data, researches hope to be able to infer how a virus would have spread from a sub sample of infected individuals at a sample time. The subtree method simulates how subtrees would be generated when you only have access to a sub sample of the infected at the end time. It models how the virus model would be reconstructed from genetic data. This function returns the subtable for the subtree. 
+
+#### Usage 
+
+subtree(prepped_table, n)
+
+#### Arguments
+
+prepped_table &nbsp;&nbsp;&nbsp;&nbsp; prepped table from phyloInfect which is required to be called prior to calling subtree 
+
+n &nbsp;&nbsp;&nbsp;&nbsp;  integer representing sample size, will throw an error if sample size is greater than the number of individuals still infected at the sample time.   
+
+#### Example Usage
+
+```{r, fig.width=10, fig.height=8,results='hide',fig.keep='all'}
+# example simulation table
+table <- data.frame(
+  time = c(
+0.000000, 1.344831, 3.629079, 4.671126, 4.763760, 5.015975, 5.122262, 5.218606, 5.633607, 5.771709, 5.865152, 6.054717, 6.887149, 7.049164, 7.165763, 7.243929, 7.541417, 7.610835, 7.636492, 7.737071, 7.781813, 7.831907, 7.925445, 7.942483, 8.080316, 8.158974, 8.269365, 8.343334, 8.384208, 8.458781, 8.483169, 8.574156, 8.595720, 8.605882, 8.663589, 8.706441, 8.769853, 8.788321, 8.880574, 8.953410, 8.961590, 8.987774, 9.110543, 9.555767, 9.719297, 9.813672, 9.931840
+  ),
+  infector = c(0, 10, 10, 50 ,58, 10, 48, 58, 10, 10, 55, 10, 10, 10, 30, 15, 8, 54, 30, 55, 19, 36, 30, 30, 17, 55, 24, 20, 36, 17, 54, 36, 3, 3, 4, 27, 13, 8, 51, 44, 30, 46, 35, 44, 40, 34, 47
+  ),
+  affected = c(10, 50, 58, 0, 48, 15, 0, 0, 8, 55, 19, 3, 30, 0, 36, 0, 54, 20, 24, 17, 34, 40, 14, 51, 4, 0, 0, 53, 27, 0, 44, 0, 46, 0, 13, 0, 35, 0, 32, 60, 12, 0, 0, 39, 0, 47, 56
+  )
+)
+
+# use to display both phylogeny in the same window
+par(mfrow = c(1, 2))
+
+# full simulation
+phyloInfect(table, "Full Sim")
+
+# example sub sample size
+n <- 10
+
+# save subtree in sub
+sub <- subtree(prepped_table, n)
+
+phyloInfect(sub, "Subtree")
+
+```
+
+
+The way the subtree is determined is by first setting the highest of the subsample as the first infected. This is because who infected who is no longer as important, the detail that matters is the horizontal distance between the time of infection and endtime. The algorithm looks for the most recent common ancestor of the individuals in the subsample. The time of infection is then replaced with the most recent common ancestor that connects to someone of the subsample. This is to simulate the fact that we'd know where the virus would have branched based on the genetics of the virus. 
+
+In the above example, id 30 is set to the initial infected. 
+
+54 in the original simulation branches from 8 who branches from 10, in the subtree 54's new time of infection is when 8 got infected. This is because 30 is acting as the initial infected or 10 in this case. Because 8 recovered they would not be in the sample at the end time. However, from the genetic data we would know that the virus branched at the time of 8's infection since it would have been mutating independently from 30. The red line shows the virus for id 30, the blue line shows the when it started mutating independently. 
+
+![](/home/snair/subtreeExample.png)
+
+For more information please email me si.nair205@gmail.com
