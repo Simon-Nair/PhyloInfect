@@ -2,8 +2,8 @@
 ================
 
 ``` r
-source("~/PhyloInfect.R")
-source("~/Subtree.R")
+source("~/PhyloInfect/R/PhyloInfect.R")
+source("~/PhyloInfect/R/Subtree.R")
 set.seed(1)
 ```
 
@@ -203,5 +203,5 @@ of 8’s infection since it would have been mutating independently from
 it started mutating independently.
 
 ![](https://raw.githubusercontent.com/Simon-Nair/PhyloInfect/master/subtreeExample.png)
-
+![](https://raw.github.com/Simon-Nair/PhyloInfect/master/subtreeExample2.png)
 For more information please email me <si.nair205@gmail.com>

@@ -4,8 +4,8 @@ output: rmarkdown::github_document
 ---
 
 ```{r}
-source("~/PhyloInfect.R")
-source("~/Subtree.R")
+source("~/PhyloInfect/R/PhyloInfect.R")
+source("~/PhyloInfect/R/Subtree.R")
 set.seed(1)
 ```
 
